@@ -7,7 +7,7 @@
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:3000",
     "beforeBuildCommand": "",
-    "frontendDist": "ohms-dbx-frontend-production.up.railway.app"
+    "frontendDist": "https://ohms-dbx-frontend-production.up.railway.app"
   },
   "app": {
     "windows": [
