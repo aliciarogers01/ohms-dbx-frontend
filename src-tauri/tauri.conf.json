@@ -1,0 +1,43 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "OHMS DBX",
+  "version": "0.1.0",
+  "identifier": "com.ohmsdbx.app",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:3000",
+    "beforeBuildCommand": "",
+    "frontendDist": "ohms-dbx-frontend-production.up.railway.app"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "OHMS DBX",
+        "width": 1280,
+        "height": 820,
+        "minWidth": 1024,
+        "minHeight": 700,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "shortDescription": "OHMS DBX desktop app",
+    "longDescription": "OHMS DBX desktop app shell that connects to the hosted OHMS DBX web app and backend.",
+    "windows": {
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper"
+      },
+      "nsis": {
+        "installerIcon": null,
+        "installMode": "perMachine"
+      }
+    }
+  }
+}
