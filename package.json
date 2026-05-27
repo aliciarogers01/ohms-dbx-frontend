@@ -6,10 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "tauri": "tauri",
-    "desktop:dev": "tauri dev",
-    "desktop:build": "tauri build"
+    "lint": "eslint"
   },
   "dependencies": {
     "next": "16.2.6",
@@ -24,8 +21,9 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
-    "typescript": "^5",
-    "@tauri-apps/cli": "^2.0.0"
+    "typescript": "^5"
   },
-  "productName": "OHMS DBX"
+  "engines": {
+    "node": "20.x"
+  }
 }
