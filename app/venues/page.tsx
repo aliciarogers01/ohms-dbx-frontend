@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import Image from "next/image";
 import VenueBrowser, {
   VenueBrowserHandle,
@@ -51,7 +51,9 @@ export default function VenuesPage() {
         </div>
       </header>
 
-      <VenueBrowser ref={venueBrowserRef} showFilters={showFilters} />
+<Suspense fallback={<div>Loading venues...</div>}>
+  <VenueBrowser ref={venueBrowserRef} showFilters={showFilters} />
+</Suspense>
 
       {isAddModalOpen && (
         <AddVenueModal

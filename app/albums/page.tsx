@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import Image from "next/image";
 import AlbumBrowser, {
   AlbumBrowserHandle,
@@ -51,7 +51,9 @@ export default function AlbumsPage() {
         </div>
       </header>
 
-      <AlbumBrowser ref={albumBrowserRef} showFilters={showFilters} />
+<Suspense fallback={<div>Loading albums...</div>}>
+  <AlbumBrowser ref={albumBrowserRef} showFilters={showFilters} />
+</Suspense>
 
       {isAddModalOpen && (
         <AddAlbumModal

@@ -20,7 +20,7 @@ export default function AddArtistModal({
 
   const [name, setName] = useState(artist?.name ?? "");
   const [roles, setRoles] = useState(artist?.roles ?? "");
-  const [city, setCity] = useState(artist?.city ?? "");
+ const [city, setCity] = useState(artist?.hometown ?? "");
   const [bio, setBio] = useState(artist?.bio ?? "");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -52,13 +52,13 @@ export default function AddArtistModal({
         imageUrl = await uploadImage(imageFile);
       }
 
-      const payload = {
-        name: name.trim(),
-        roles: roles.trim(),
-        city: city.trim(),
-        bio: bio.trim(),
-        image_url: imageUrl,
-      };
+const payload = {
+  name: name.trim(),
+  roles: roles.trim(),
+  hometown: city.trim(),
+  bio: bio.trim(),
+  image_url: imageUrl,
+};
 
       if (artist) {
         await updateArtist(artist.id, payload);

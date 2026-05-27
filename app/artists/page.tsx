@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import Image from "next/image";
 import ArtistBrowser, {
   ArtistBrowserHandle,
@@ -51,7 +51,9 @@ export default function ArtistsPage() {
         </div>
       </header>
 
-      <ArtistBrowser ref={artistBrowserRef} showFilters={showFilters} />
+<Suspense fallback={<div>Loading artists...</div>}>
+  <ArtistBrowser ref={artistBrowserRef} showFilters={showFilters} />
+</Suspense>
 
       {isAddModalOpen && (
         <AddArtistModal

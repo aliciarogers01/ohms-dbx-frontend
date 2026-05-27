@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import Image from "next/image";
 import BandBrowser, {
   BandBrowserHandle,
@@ -51,7 +51,9 @@ export default function BandsPage() {
         </div>
       </header>
 
-      <BandBrowser ref={bandBrowserRef} showFilters={showFilters} />
+<Suspense fallback={<div>Loading bands...</div>}>
+  <BandBrowser ref={bandBrowserRef} showFilters={showFilters} />
+</Suspense>
 
       {isAddModalOpen && (
         <AddBandModal

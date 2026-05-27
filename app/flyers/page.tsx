@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import Image from "next/image";
 import FlyerBrowser, {
   FlyerBrowserHandle,
@@ -51,7 +51,9 @@ export default function FlyersPage() {
         </div>
       </header>
 
-      <FlyerBrowser ref={flyerBrowserRef} showFilters={showFilters} />
+<Suspense fallback={<div>Loading flyers...</div>}>
+  <FlyerBrowser ref={flyerBrowserRef} showFilters={showFilters} />
+</Suspense>
 
       {isAddModalOpen && (
         <AddFlyerModal
