@@ -1,0 +1,134 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.artist-modal {
+  width: 620px;
+  max-width: calc(100vw - 40px);
+  background: linear-gradient(145deg, #111, #050505);
+  border: 1px solid #333;
+  border-radius: 20px;
+  padding: 26px;
+}
+
+.artist-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.artist-modal-header h2 {
+  margin: 0;
+  font-size: 32px;
+}
+
+.artist-modal-header button {
+  background: transparent;
+  border: 0;
+  color: white;
+  font-size: 34px;
+  cursor: pointer;
+}
+
+.artist-modal-form {
+  display: grid;
+  gap: 16px;
+}
+
+.artist-modal-form label {
+  display: grid;
+  gap: 8px;
+  color: #bbb;
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.artist-modal-form input,
+.artist-modal-form textarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid #333;
+  background: #050505;
+  color: white;
+  padding: 13px 15px;
+  font-size: 16px;
+}
+
+.artist-modal-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.artist-modal-error {
+  color: #ff6b6b;
+}
+
+.artist-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.artist-modal-actions button {
+  height: 48px;
+  padding: 0 20px;
+  border-radius: 12px;
+  border: 1px solid #333;
+  background: #111;
+  color: white;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.artist-modal-actions button[type="submit"] {
+  background: #9d1515;
+  border-color: #d12a2a;
+}
+
+.artist-image-picker {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 18px;
+  align-items: center;
+}
+
+.artist-image-preview {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 18px;
+  border: 1px solid #333;
+  background: #050505;
+}
+
+.artist-file-label input {
+  margin-top: 10px;
+}
+
+/* FORCE MODALS TO SCROLL WHEN FORM IS TALL */
+
+.modal-backdrop {
+  align-items: flex-start;
+  padding: 32px 0;
+  overflow-y: auto;
+}
+
+.artist-modal {
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+}
+
+.artist-modal-actions {
+  position: sticky;
+  bottom: 0;
+  background: linear-gradient(145deg, #111, #050505);
+  padding-top: 16px;
+}
