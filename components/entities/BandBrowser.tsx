@@ -6,7 +6,7 @@ import {
   useImperativeHandle,
   useState,
 } from "react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import {
   Album,
@@ -23,6 +23,7 @@ import {
 } from "@/lib/relationships";
 import RelatedSection, { RelatedItem } from "./RelatedSection";
 import LinkArtistModal from "./LinkArtistModal";
+import LinkAlbumModal from "./LinkAlbumModal";
 import AddBandModal from "./AddBandModal";
 import "./BandBrowser.css";
 
@@ -37,6 +38,8 @@ type BandBrowserProps = {
 const BandBrowser = forwardRef<BandBrowserHandle, BandBrowserProps>(
   function BandBrowser({ showFilters }, ref) {
     const searchParams = useSearchParams();
+const router = useRouter();
+const pathname = usePathname();
     const selectedBandId = Number(searchParams.get("selected"));
 
     const [bands, setBands] = useState<Band[]>([]);
@@ -47,6 +50,7 @@ const [albums, setAlbums] = useState<Album[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
     const [isLinkArtistModalOpen, setIsLinkArtistModalOpen] = useState(false);
+const [isLinkAlbumModalOpen, setIsLinkAlbumModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     async function loadBands() {
@@ -194,7 +198,10 @@ function getRelatedAlbums(): RelatedItem[] {
                   selectedBand?.id === band.id ? "active" : ""
                 }`}
                 key={band.id}
-                onClick={() => setSelectedBand(band)}
+onClick={() => {
+  setSelectedBand(band);
+  router.replace(`${pathname}?selected=${band.id}`, { scroll: false });
+}}
               >
                 <Image
                   src={band.image_url || "/icons/Bands.png"}
@@ -277,7 +284,7 @@ function getRelatedAlbums(): RelatedItem[] {
   emptyText="No albums have been linked to this band yet."
   items={getRelatedAlbums()}
   fallbackIcon="/icons/Albums.png"
-  onLinkClick={() => alert("Link album modal coming next.")}
+  onLinkClick={() => setIsLinkAlbumModalOpen(true)}
   actionLabel="+ ADD ALBUM"
 />
               </div>
@@ -289,6 +296,14 @@ function getRelatedAlbums(): RelatedItem[] {
                   onLinked={loadBands}
                 />
               )}
+
+{isLinkAlbumModalOpen && selectedBand && (
+  <LinkAlbumModal
+    band={selectedBand}
+    onClose={() => setIsLinkAlbumModalOpen(false)}
+    onLinked={loadBands}
+  />
+)}
 
               {isEditModalOpen && selectedBand && (
                 <AddBandModal

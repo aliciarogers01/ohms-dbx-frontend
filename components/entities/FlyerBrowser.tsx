@@ -6,7 +6,7 @@ import {
   useImperativeHandle,
   useState,
 } from "react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import {
   Band,
@@ -32,6 +32,8 @@ type FlyerBrowserProps = {
 const FlyerBrowser = forwardRef<FlyerBrowserHandle, FlyerBrowserProps>(
   function FlyerBrowser({ showFilters }, ref) {
     const searchParams = useSearchParams();
+const router = useRouter();
+const pathname = usePathname();
     const selectedFlyerId = Number(searchParams.get("selected"));
 
     const [flyers, setFlyers] = useState<Flyer[]>([]);
@@ -188,7 +190,10 @@ const FlyerBrowser = forwardRef<FlyerBrowserHandle, FlyerBrowserProps>(
                   selectedFlyer?.id === flyer.id ? "active" : ""
                 }`}
                 key={flyer.id}
-                onClick={() => setSelectedFlyer(flyer)}
+onClick={() => {
+  setSelectedFlyer(flyer);
+  router.replace(`${pathname}?selected=${flyer.id}`, { scroll: false });
+}}
               >
                 <Image
                   src={flyer.image_url || "/icons/Flyers.png"}

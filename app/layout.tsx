@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import "./globals.css";
 import BottomNavigation from "@/components/navigation/BottomNavigation";
+import RouteMemory from "@/components/navigation/RouteMemory";
 
 export const metadata: Metadata = {
   title: "OHMS DBX",
@@ -15,6 +17,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <Suspense fallback={null}>
+          <RouteMemory />
+        </Suspense>
+
         <main className="app-shell">{children}</main>
         <BottomNavigation />
       </body>

@@ -6,7 +6,7 @@ import {
   useImperativeHandle,
   useState,
 } from "react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import {
   Flyer,
@@ -30,6 +30,8 @@ type VenueBrowserProps = {
 const VenueBrowser = forwardRef<VenueBrowserHandle, VenueBrowserProps>(
   function VenueBrowser({ showFilters }, ref) {
     const searchParams = useSearchParams();
+const router = useRouter();
+const pathname = usePathname();
     const selectedVenueId = Number(searchParams.get("selected"));
 
     const [venues, setVenues] = useState<Venue[]>([]);
@@ -162,7 +164,10 @@ const VenueBrowser = forwardRef<VenueBrowserHandle, VenueBrowserProps>(
                   selectedVenue?.id === venue.id ? "active" : ""
                 }`}
                 key={venue.id}
-                onClick={() => setSelectedVenue(venue)}
+onClick={() => {
+  setSelectedVenue(venue);
+  router.replace(`${pathname}?selected=${venue.id}`, { scroll: false });
+}}
               >
                 <Image
                   src={venue.image_url || "/icons/Venues.png"}

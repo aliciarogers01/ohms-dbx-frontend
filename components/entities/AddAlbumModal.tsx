@@ -20,7 +20,6 @@ export default function AddAlbumModal({
 
   const [title, setTitle] = useState(album?.title ?? "");
   const [bandName, setBandName] = useState(album?.band_name ?? "");
-  const [artistName, setArtistName] = useState(album?.artist_name ?? "");
   const [year, setYear] = useState(album?.year ?? "");
   const [releaseDate, setReleaseDate] = useState(album?.release_date ?? "");
   const [genre, setGenre] = useState(album?.genre ?? "");
@@ -37,8 +36,8 @@ export default function AddAlbumModal({
     return album?.image_url || "/icons/Albums.png";
   }, [album?.image_url, imageFile]);
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function handleSubmit(formEvent: React.FormEvent<HTMLFormElement>) {
+    formEvent.preventDefault();
 
     if (!title.trim()) {
       setErrorMessage("Album title is required.");
@@ -59,7 +58,6 @@ export default function AddAlbumModal({
         title: title.trim(),
         album_name: title.trim(),
         band_name: bandName.trim(),
-        artist_name: artistName.trim(),
         year: year.trim(),
         release_date: releaseDate.trim(),
         genre: genre.trim(),
@@ -133,14 +131,6 @@ export default function AddAlbumModal({
             <input
               value={bandName}
               onChange={(event) => setBandName(event.target.value)}
-            />
-          </label>
-
-          <label>
-            Artist Name
-            <input
-              value={artistName}
-              onChange={(event) => setArtistName(event.target.value)}
             />
           </label>
 

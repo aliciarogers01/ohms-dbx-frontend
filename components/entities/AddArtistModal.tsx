@@ -34,8 +34,8 @@ export default function AddArtistModal({
     return artist?.image_url || "/icons/Artists.png";
   }, [artist?.image_url, imageFile]);
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function handleSubmit(formEvent: React.FormEvent<HTMLFormElement>) {
+    formEvent.preventDefault();
 
     if (!name.trim()) {
       setErrorMessage("Artist name is required.");

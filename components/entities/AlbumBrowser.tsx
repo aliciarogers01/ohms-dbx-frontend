@@ -6,7 +6,7 @@ import {
   useImperativeHandle,
   useState,
 } from "react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import {
   Album,
@@ -30,6 +30,8 @@ type AlbumBrowserProps = {
 const AlbumBrowser = forwardRef<AlbumBrowserHandle, AlbumBrowserProps>(
   function AlbumBrowser({ showFilters }, ref) {
     const searchParams = useSearchParams();
+const router = useRouter();
+const pathname = usePathname();
     const selectedAlbumId = Number(searchParams.get("selected"));
 
     const [albums, setAlbums] = useState<Album[]>([]);
@@ -162,7 +164,10 @@ setBands(bandData);
                   selectedAlbum?.id === album.id ? "active" : ""
                 }`}
                 key={album.id}
-                onClick={() => setSelectedAlbum(album)}
+onClick={() => {
+  setSelectedAlbum(album);
+  router.replace(`${pathname}?selected=${album.id}`, { scroll: false });
+}}
               >
                 <Image
                   src={album.image_url || "/icons/Albums.png"}

@@ -6,7 +6,7 @@ import {
   useImperativeHandle,
   useState,
 } from "react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import AddArtistModal from "./AddArtistModal";
 import RelatedSection, { RelatedItem } from "./RelatedSection";
@@ -34,6 +34,8 @@ type ArtistBrowserProps = {
 const ArtistBrowser = forwardRef<ArtistBrowserHandle, ArtistBrowserProps>(
   function ArtistBrowser({ showFilters }, ref) {
     const searchParams = useSearchParams();
+const router = useRouter();
+const pathname = usePathname();
     const selectedArtistId = Number(searchParams.get("selected"));
 
     const [artists, setArtists] = useState<Artist[]>([]);
@@ -159,7 +161,10 @@ setArtists(artistData);
                   selectedArtist?.id === artist.id ? "active" : ""
                 }`}
                 key={artist.id}
-                onClick={() => setSelectedArtist(artist)}
+onClick={() => {
+  setSelectedArtist(artist);
+  router.replace(`${pathname}?selected=${artist.id}`, { scroll: false });
+}}
               >
                 <Image
                   src={artist.image_url || "/icons/Artists.png"}

@@ -2,42 +2,43 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
-import { Band, createBand, updateBand, uploadImage } from "@/lib/api";
+import { Studio, createStudio, updateStudio, uploadImage } from "@/lib/api";
 import "./AddArtistModal.css";
 
-type AddBandModalProps = {
-  band?: Band | null;
+type AddStudioModalProps = {
+  studio?: Studio | null;
   onClose: () => void;
-  onBandSaved: () => void;
+  onStudioSaved: () => void;
 };
 
-export default function AddBandModal({
-  band,
+export default function AddStudioModal({
+  studio,
   onClose,
-  onBandSaved,
-}: AddBandModalProps) {
-  const isEditing = Boolean(band);
+  onStudioSaved,
+}: AddStudioModalProps) {
+  const isEditing = Boolean(studio);
 
-  const [name, setName] = useState(band?.name ?? "");
-  const [originCity, setOriginCity] = useState(band?.origin_city ?? "");
-  const [region, setRegion] = useState(band?.region ?? "");
-  const [genre, setGenre] = useState(band?.genre ?? "");
-  const [yearsActive, setYearsActive] = useState(band?.years_active ?? "");
-  const [bio, setBio] = useState(band?.bio ?? "");
+  const [name, setName] = useState(studio?.name ?? "");
+  const [city, setCity] = useState(studio?.city ?? "");
+  const [region, setRegion] = useState(studio?.region ?? "");
+  const [address, setAddress] = useState(studio?.address ?? "");
+  const [yearsActive, setYearsActive] = useState(studio?.years_active ?? "");
+  const [history, setHistory] = useState(studio?.history ?? "");
+  const [notes, setNotes] = useState(studio?.notes ?? "");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const previewUrl = useMemo(() => {
     if (imageFile) return URL.createObjectURL(imageFile);
-    return band?.image_url || "/icons/Bands.png";
-  }, [band?.image_url, imageFile]);
+    return studio?.image_url || "/icons/Studios.png";
+  }, [studio?.image_url, imageFile]);
 
   async function handleSubmit(formEvent: React.FormEvent<HTMLFormElement>) {
     formEvent.preventDefault();
 
     if (!name.trim()) {
-      setErrorMessage("Band name is required.");
+      setErrorMessage("Studio name/title is required.");
       return;
     }
 
@@ -45,7 +46,7 @@ export default function AddBandModal({
       setIsSaving(true);
       setErrorMessage("");
 
-      let imageUrl = band?.image_url ?? "";
+      let imageUrl = studio?.image_url ?? "";
 
       if (imageFile) {
         imageUrl = await uploadImage(imageFile);
@@ -53,25 +54,26 @@ export default function AddBandModal({
 
       const payload = {
         name: name.trim(),
-        origin_city: originCity.trim(),
+        city: city.trim(),
         region: region.trim(),
-        genre: genre.trim(),
+        address: address.trim(),
         years_active: yearsActive.trim(),
-        bio: bio.trim(),
+        history: history.trim(),
+        notes: notes.trim(),
         image_url: imageUrl,
       };
 
-      if (band) {
-        await updateBand(band.id, payload);
+      if (studio) {
+        await updateStudio(studio.id, payload);
       } else {
-        await createBand(payload);
+        await createStudio(payload);
       }
 
-      onBandSaved();
+      onStudioSaved();
       onClose();
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Failed to save band."
+        error instanceof Error ? error.message : "Failed to save studio."
       );
     } finally {
       setIsSaving(false);
@@ -82,7 +84,7 @@ export default function AddBandModal({
     <div className="modal-backdrop">
       <div className="artist-modal">
         <div className="artist-modal-header">
-          <h2>{isEditing ? "EDIT BAND" : "ADD BAND"}</h2>
+          <h2>{isEditing ? "EDIT STUDIO" : "ADD STUDIO"}</h2>
           <button type="button" onClick={onClose}>
             ×
           </button>
@@ -92,7 +94,7 @@ export default function AddBandModal({
           <div className="artist-image-picker">
             <Image
               src={previewUrl}
-              alt="Band preview"
+              alt="Studio preview"
               width={120}
               height={120}
               className="artist-image-preview"
@@ -100,7 +102,7 @@ export default function AddBandModal({
             />
 
             <label className="artist-file-label">
-              Band Image
+              Studio Image
               <input
                 type="file"
                 accept="image/png,image/jpeg,image/jpg"
@@ -112,51 +114,32 @@ export default function AddBandModal({
           </div>
 
           <label>
-            Band Name
-            <input
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-            />
+            Studio Name
+            <input value={name} onChange={(event) => setName(event.target.value)} />
           </label>
-
           <label>
-            Origin City
-            <input
-              value={originCity}
-              onChange={(event) => setOriginCity(event.target.value)}
-            />
+            City
+            <input value={city} onChange={(event) => setCity(event.target.value)} />
           </label>
-
           <label>
             Region
-            <input
-              value={region}
-              onChange={(event) => setRegion(event.target.value)}
-            />
+            <input value={region} onChange={(event) => setRegion(event.target.value)} />
           </label>
-
           <label>
-            Genre
-            <input
-              value={genre}
-              onChange={(event) => setGenre(event.target.value)}
-            />
+            Address
+            <input value={address} onChange={(event) => setAddress(event.target.value)} />
           </label>
-
           <label>
             Years Active
-            <input
-              value={yearsActive}
-              onChange={(event) => setYearsActive(event.target.value)}
-            />
+            <input value={yearsActive} onChange={(event) => setYearsActive(event.target.value)} />
           </label>
-
           <label>
-            Bio
-            <textarea
-              value={bio}
-              onChange={(event) => setBio(event.target.value)}
-            />
+            History
+            <textarea value={history} onChange={(event) => setHistory(event.target.value)} />
+          </label>
+          <label>
+            Notes
+            <textarea value={notes} onChange={(event) => setNotes(event.target.value)} />
           </label>
 
           {errorMessage && (
@@ -169,7 +152,11 @@ export default function AddBandModal({
             </button>
 
             <button type="submit" disabled={isSaving}>
-              {isSaving ? "SAVING..." : isEditing ? "SAVE CHANGES" : "SAVE BAND"}
+              {isSaving
+                ? "SAVING..."
+                : isEditing
+                ? "SAVE CHANGES"
+                : "SAVE STUDIO"}
             </button>
           </div>
         </form>

@@ -2,43 +2,44 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
-import { Venue, createVenue, updateVenue, uploadImage } from "@/lib/api";
+import { Video, createVideo, updateVideo, uploadImage } from "@/lib/api";
 import "./AddArtistModal.css";
 
-type AddVenueModalProps = {
-  venue?: Venue | null;
+type AddVideoModalProps = {
+  video?: Video | null;
   onClose: () => void;
-  onVenueSaved: () => void;
+  onVideoSaved: () => void;
 };
 
-export default function AddVenueModal({
-  venue,
+export default function AddVideoModal({
+  video,
   onClose,
-  onVenueSaved,
-}: AddVenueModalProps) {
-  const isEditing = Boolean(venue);
+  onVideoSaved,
+}: AddVideoModalProps) {
+  const isEditing = Boolean(video);
 
-  const [name, setName] = useState(venue?.name ?? "");
-  const [city, setCity] = useState(venue?.city ?? "");
-  const [region, setRegion] = useState(venue?.region ?? "");
-  const [address, setAddress] = useState(venue?.address ?? "");
-  const [yearsActive, setYearsActive] = useState(venue?.years_active ?? "");
-  const [history, setHistory] = useState(venue?.history ?? "");
-  const [notes, setNotes] = useState(venue?.notes ?? "");
+  const [title, setTitle] = useState(video?.title ?? "");
+  const [artistName, setArtistName] = useState(video?.artist_name ?? "");
+  const [bandName, setBandName] = useState(video?.band_name ?? "");
+  const [venueName, setVenueName] = useState(video?.venue_name ?? "");
+  const [releaseDate, setReleaseDate] = useState(video?.release_date ?? "");
+  const [year, setYear] = useState(video?.year ?? "");
+  const [url, setUrl] = useState(video?.url ?? "");
+  const [notes, setNotes] = useState(video?.notes ?? "");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const previewUrl = useMemo(() => {
     if (imageFile) return URL.createObjectURL(imageFile);
-    return venue?.image_url || "/icons/Venues.png";
-  }, [venue?.image_url, imageFile]);
+    return video?.image_url || "/icons/Videos.png";
+  }, [video?.image_url, imageFile]);
 
   async function handleSubmit(formEvent: React.FormEvent<HTMLFormElement>) {
     formEvent.preventDefault();
 
-    if (!name.trim()) {
-      setErrorMessage("Venue name is required.");
+    if (!title.trim()) {
+      setErrorMessage("Video name/title is required.");
       return;
     }
 
@@ -46,34 +47,35 @@ export default function AddVenueModal({
       setIsSaving(true);
       setErrorMessage("");
 
-      let imageUrl = venue?.image_url ?? "";
+      let imageUrl = video?.image_url ?? "";
 
       if (imageFile) {
         imageUrl = await uploadImage(imageFile);
       }
 
       const payload = {
-        name: name.trim(),
-        city: city.trim(),
-        region: region.trim(),
-        address: address.trim(),
-        years_active: yearsActive.trim(),
-        history: history.trim(),
+        title: title.trim(),
+        artist_name: artistName.trim(),
+        band_name: bandName.trim(),
+        venue_name: venueName.trim(),
+        release_date: releaseDate.trim(),
+        year: year.trim(),
+        url: url.trim(),
         notes: notes.trim(),
         image_url: imageUrl,
       };
 
-      if (venue) {
-        await updateVenue(venue.id, payload);
+      if (video) {
+        await updateVideo(video.id, payload);
       } else {
-        await createVenue(payload);
+        await createVideo(payload);
       }
 
-      onVenueSaved();
+      onVideoSaved();
       onClose();
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Failed to save venue."
+        error instanceof Error ? error.message : "Failed to save video."
       );
     } finally {
       setIsSaving(false);
@@ -84,7 +86,7 @@ export default function AddVenueModal({
     <div className="modal-backdrop">
       <div className="artist-modal">
         <div className="artist-modal-header">
-          <h2>{isEditing ? "EDIT VENUE" : "ADD VENUE"}</h2>
+          <h2>{isEditing ? "EDIT VIDEO" : "ADD VIDEO"}</h2>
           <button type="button" onClick={onClose}>
             ×
           </button>
@@ -94,7 +96,7 @@ export default function AddVenueModal({
           <div className="artist-image-picker">
             <Image
               src={previewUrl}
-              alt="Venue preview"
+              alt="Video preview"
               width={120}
               height={120}
               className="artist-image-preview"
@@ -102,7 +104,7 @@ export default function AddVenueModal({
             />
 
             <label className="artist-file-label">
-              Venue Image
+              Video Image
               <input
                 type="file"
                 accept="image/png,image/jpeg,image/jpg"
@@ -114,35 +116,33 @@ export default function AddVenueModal({
           </div>
 
           <label>
+            Video Title
+            <input value={title} onChange={(event) => setTitle(event.target.value)} />
+          </label>
+          <label>
+            Artist Name
+            <input value={artistName} onChange={(event) => setArtistName(event.target.value)} />
+          </label>
+          <label>
+            Band Name
+            <input value={bandName} onChange={(event) => setBandName(event.target.value)} />
+          </label>
+          <label>
             Venue Name
-            <input value={name} onChange={(event) => setName(event.target.value)} />
+            <input value={venueName} onChange={(event) => setVenueName(event.target.value)} />
           </label>
-
           <label>
-            City
-            <input value={city} onChange={(event) => setCity(event.target.value)} />
+            Release Date
+            <input value={releaseDate} onChange={(event) => setReleaseDate(event.target.value)} />
           </label>
-
           <label>
-            Region
-            <input value={region} onChange={(event) => setRegion(event.target.value)} />
+            Year
+            <input value={year} onChange={(event) => setYear(event.target.value)} />
           </label>
-
           <label>
-            Address
-            <input value={address} onChange={(event) => setAddress(event.target.value)} />
+            Video URL
+            <input value={url} onChange={(event) => setUrl(event.target.value)} />
           </label>
-
-          <label>
-            Years Active
-            <input value={yearsActive} onChange={(event) => setYearsActive(event.target.value)} />
-          </label>
-
-          <label>
-            History
-            <textarea value={history} onChange={(event) => setHistory(event.target.value)} />
-          </label>
-
           <label>
             Notes
             <textarea value={notes} onChange={(event) => setNotes(event.target.value)} />
@@ -162,7 +162,7 @@ export default function AddVenueModal({
                 ? "SAVING..."
                 : isEditing
                 ? "SAVE CHANGES"
-                : "SAVE VENUE"}
+                : "SAVE VIDEO"}
             </button>
           </div>
         </form>

@@ -2,42 +2,42 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
-import { Band, createBand, updateBand, uploadImage } from "@/lib/api";
+import { Label, createLabel, updateLabel, uploadImage } from "@/lib/api";
 import "./AddArtistModal.css";
 
-type AddBandModalProps = {
-  band?: Band | null;
+type AddLabelModalProps = {
+  label?: Label | null;
   onClose: () => void;
-  onBandSaved: () => void;
+  onLabelSaved: () => void;
 };
 
-export default function AddBandModal({
-  band,
+export default function AddLabelModal({
+  label,
   onClose,
-  onBandSaved,
-}: AddBandModalProps) {
-  const isEditing = Boolean(band);
+  onLabelSaved,
+}: AddLabelModalProps) {
+  const isEditing = Boolean(label);
 
-  const [name, setName] = useState(band?.name ?? "");
-  const [originCity, setOriginCity] = useState(band?.origin_city ?? "");
-  const [region, setRegion] = useState(band?.region ?? "");
-  const [genre, setGenre] = useState(band?.genre ?? "");
-  const [yearsActive, setYearsActive] = useState(band?.years_active ?? "");
-  const [bio, setBio] = useState(band?.bio ?? "");
+  const [name, setName] = useState(label?.name ?? "");
+  const [city, setCity] = useState(label?.city ?? "");
+  const [region, setRegion] = useState(label?.region ?? "");
+  const [yearsActive, setYearsActive] = useState(label?.years_active ?? "");
+  const [history, setHistory] = useState(label?.history ?? "");
+  const [notes, setNotes] = useState(label?.notes ?? "");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const previewUrl = useMemo(() => {
     if (imageFile) return URL.createObjectURL(imageFile);
-    return band?.image_url || "/icons/Bands.png";
-  }, [band?.image_url, imageFile]);
+    return label?.image_url || "/icons/Labels.png";
+  }, [label?.image_url, imageFile]);
 
   async function handleSubmit(formEvent: React.FormEvent<HTMLFormElement>) {
     formEvent.preventDefault();
 
     if (!name.trim()) {
-      setErrorMessage("Band name is required.");
+      setErrorMessage("Label name/title is required.");
       return;
     }
 
@@ -45,7 +45,7 @@ export default function AddBandModal({
       setIsSaving(true);
       setErrorMessage("");
 
-      let imageUrl = band?.image_url ?? "";
+      let imageUrl = label?.image_url ?? "";
 
       if (imageFile) {
         imageUrl = await uploadImage(imageFile);
@@ -53,25 +53,25 @@ export default function AddBandModal({
 
       const payload = {
         name: name.trim(),
-        origin_city: originCity.trim(),
+        city: city.trim(),
         region: region.trim(),
-        genre: genre.trim(),
         years_active: yearsActive.trim(),
-        bio: bio.trim(),
+        history: history.trim(),
+        notes: notes.trim(),
         image_url: imageUrl,
       };
 
-      if (band) {
-        await updateBand(band.id, payload);
+      if (label) {
+        await updateLabel(label.id, payload);
       } else {
-        await createBand(payload);
+        await createLabel(payload);
       }
 
-      onBandSaved();
+      onLabelSaved();
       onClose();
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Failed to save band."
+        error instanceof Error ? error.message : "Failed to save label."
       );
     } finally {
       setIsSaving(false);
@@ -82,7 +82,7 @@ export default function AddBandModal({
     <div className="modal-backdrop">
       <div className="artist-modal">
         <div className="artist-modal-header">
-          <h2>{isEditing ? "EDIT BAND" : "ADD BAND"}</h2>
+          <h2>{isEditing ? "EDIT LABEL" : "ADD LABEL"}</h2>
           <button type="button" onClick={onClose}>
             ×
           </button>
@@ -92,7 +92,7 @@ export default function AddBandModal({
           <div className="artist-image-picker">
             <Image
               src={previewUrl}
-              alt="Band preview"
+              alt="Label preview"
               width={120}
               height={120}
               className="artist-image-preview"
@@ -100,7 +100,7 @@ export default function AddBandModal({
             />
 
             <label className="artist-file-label">
-              Band Image
+              Label Image
               <input
                 type="file"
                 accept="image/png,image/jpeg,image/jpg"
@@ -112,51 +112,28 @@ export default function AddBandModal({
           </div>
 
           <label>
-            Band Name
-            <input
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-            />
+            Label Name
+            <input value={name} onChange={(event) => setName(event.target.value)} />
           </label>
-
           <label>
-            Origin City
-            <input
-              value={originCity}
-              onChange={(event) => setOriginCity(event.target.value)}
-            />
+            City
+            <input value={city} onChange={(event) => setCity(event.target.value)} />
           </label>
-
           <label>
             Region
-            <input
-              value={region}
-              onChange={(event) => setRegion(event.target.value)}
-            />
+            <input value={region} onChange={(event) => setRegion(event.target.value)} />
           </label>
-
-          <label>
-            Genre
-            <input
-              value={genre}
-              onChange={(event) => setGenre(event.target.value)}
-            />
-          </label>
-
           <label>
             Years Active
-            <input
-              value={yearsActive}
-              onChange={(event) => setYearsActive(event.target.value)}
-            />
+            <input value={yearsActive} onChange={(event) => setYearsActive(event.target.value)} />
           </label>
-
           <label>
-            Bio
-            <textarea
-              value={bio}
-              onChange={(event) => setBio(event.target.value)}
-            />
+            History
+            <textarea value={history} onChange={(event) => setHistory(event.target.value)} />
+          </label>
+          <label>
+            Notes
+            <textarea value={notes} onChange={(event) => setNotes(event.target.value)} />
           </label>
 
           {errorMessage && (
@@ -169,7 +146,11 @@ export default function AddBandModal({
             </button>
 
             <button type="submit" disabled={isSaving}>
-              {isSaving ? "SAVING..." : isEditing ? "SAVE CHANGES" : "SAVE BAND"}
+              {isSaving
+                ? "SAVING..."
+                : isEditing
+                ? "SAVE CHANGES"
+                : "SAVE LABEL"}
             </button>
           </div>
         </form>

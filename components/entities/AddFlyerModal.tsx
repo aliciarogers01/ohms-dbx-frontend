@@ -37,8 +37,8 @@ export default function AddFlyerModal({
     return flyer?.image_url || "/icons/Flyers.png";
   }, [flyer?.image_url, imageFile]);
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function handleSubmit(formEvent: React.FormEvent<HTMLFormElement>) {
+    formEvent.preventDefault();
 
     if (!title.trim()) {
       setErrorMessage("Flyer title is required.");

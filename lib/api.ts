@@ -151,7 +151,6 @@ export type CreateAlbumPayload = {
   title: string;
   album_name?: string;
   album_title?: string;
-  artist_name?: string;
   band_name?: string;
   release_date?: string;
   year?: string;
@@ -445,3 +444,406 @@ export async function deleteVenue(venueId: number): Promise<void> {
     throw new Error(`Failed to delete venue: ${response.status}`);
   }
 }
+
+export type Label = {
+  id: number;
+  name: string;
+  city?: string | null;
+  region?: string | null;
+  years_active?: string | null;
+  image_url?: string | null;
+  history?: string | null;
+  notes?: string | null;
+};
+
+export type Studio = {
+  id: number;
+  name: string;
+  city?: string | null;
+  region?: string | null;
+  address?: string | null;
+  years_active?: string | null;
+  image_url?: string | null;
+  history?: string | null;
+  notes?: string | null;
+};
+
+export type Video = {
+  id: number;
+  title: string;
+  artist_name?: string | null;
+  band_name?: string | null;
+  venue_name?: string | null;
+  release_date?: string | null;
+  year?: string | null;
+  url?: string | null;
+  image_url?: string | null;
+  notes?: string | null;
+};
+
+export type BookZine = {
+  id: number;
+  title: string;
+  creator?: string | null;
+  publisher?: string | null;
+  year?: string | null;
+  city?: string | null;
+  subject_artist?: string | null;
+  subject_band?: string | null;
+  image_url?: string | null;
+  notes?: string | null;
+};
+
+export type Event = {
+  id: number;
+  title: string;
+  event_date?: string | null;
+  year?: string | null;
+  venue_name?: string | null;
+  city?: string | null;
+  band_name?: string | null;
+  image_url?: string | null;
+  notes?: string | null;
+};
+
+export type CreateLabelPayload = {
+  name: string;
+  city?: string;
+  region?: string;
+  years_active?: string;
+  image_url?: string;
+  history?: string;
+  notes?: string;
+};
+
+export type UpdateLabelPayload = Partial<CreateLabelPayload>;
+
+export async function getLabels(): Promise<Label[]> {
+  const response = await fetch(`${getApiBaseUrl()}/labels`);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch labels: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function createLabel(payload: CreateLabelPayload): Promise<Label> {
+  const response = await fetch(`${getApiBaseUrl()}/labels`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to create label: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function updateLabel(
+  labelId: number,
+  payload: UpdateLabelPayload
+): Promise<Label> {
+  const response = await fetch(`${getApiBaseUrl()}/labels/${labelId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to update label: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function deleteLabel(labelId: number): Promise<void> {
+  const response = await fetch(`${getApiBaseUrl()}/labels/${labelId}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to delete label: ${response.status}`);
+  }
+}
+
+export type CreateStudioPayload = {
+  name: string;
+  city?: string;
+  region?: string;
+  address?: string;
+  years_active?: string;
+  image_url?: string;
+  history?: string;
+  notes?: string;
+};
+
+export type UpdateStudioPayload = Partial<CreateStudioPayload>;
+
+export async function getStudios(): Promise<Studio[]> {
+  const response = await fetch(`${getApiBaseUrl()}/studios`);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch studios: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function createStudio(payload: CreateStudioPayload): Promise<Studio> {
+  const response = await fetch(`${getApiBaseUrl()}/studios`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to create studio: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function updateStudio(
+  studioId: number,
+  payload: UpdateStudioPayload
+): Promise<Studio> {
+  const response = await fetch(`${getApiBaseUrl()}/studios/${studioId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to update studio: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function deleteStudio(studioId: number): Promise<void> {
+  const response = await fetch(`${getApiBaseUrl()}/studios/${studioId}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to delete studio: ${response.status}`);
+  }
+}
+
+export type CreateVideoPayload = {
+  title: string;
+  artist_name?: string;
+  band_name?: string;
+  venue_name?: string;
+  release_date?: string;
+  year?: string;
+  url?: string;
+  image_url?: string;
+  notes?: string;
+};
+
+export type UpdateVideoPayload = Partial<CreateVideoPayload>;
+
+export async function getVideos(): Promise<Video[]> {
+  const response = await fetch(`${getApiBaseUrl()}/videos`);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch videos: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function createVideo(payload: CreateVideoPayload): Promise<Video> {
+  const response = await fetch(`${getApiBaseUrl()}/videos`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to create video: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function updateVideo(
+  videoId: number,
+  payload: UpdateVideoPayload
+): Promise<Video> {
+  const response = await fetch(`${getApiBaseUrl()}/videos/${videoId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to update video: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function deleteVideo(videoId: number): Promise<void> {
+  const response = await fetch(`${getApiBaseUrl()}/videos/${videoId}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to delete video: ${response.status}`);
+  }
+}
+
+export type CreateBookZinePayload = {
+  title: string;
+  creator?: string;
+  publisher?: string;
+  year?: string;
+  city?: string;
+  subject_artist?: string;
+  subject_band?: string;
+  image_url?: string;
+  notes?: string;
+};
+
+export type UpdateBookZinePayload = Partial<CreateBookZinePayload>;
+
+export async function getBooksZines(): Promise<BookZine[]> {
+  const response = await fetch(`${getApiBaseUrl()}/books-zines`);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch books/zines: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function createBookZine(payload: CreateBookZinePayload): Promise<BookZine> {
+  const response = await fetch(`${getApiBaseUrl()}/books-zines`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to create book/zine: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function updateBookZine(
+  bookZineId: number,
+  payload: UpdateBookZinePayload
+): Promise<BookZine> {
+  const response = await fetch(`${getApiBaseUrl()}/books-zines/${bookZineId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to update book/zine: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function deleteBookZine(bookZineId: number): Promise<void> {
+  const response = await fetch(`${getApiBaseUrl()}/books-zines/${bookZineId}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to delete book/zine: ${response.status}`);
+  }
+}
+
+export type CreateEventPayload = {
+  title: string;
+  event_date?: string;
+  year?: string;
+  venue_name?: string;
+  city?: string;
+  band_name?: string;
+  image_url?: string;
+  notes?: string;
+};
+
+export type UpdateEventPayload = Partial<CreateEventPayload>;
+
+export async function getEvents(): Promise<Event[]> {
+  const response = await fetch(`${getApiBaseUrl()}/events`);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch events: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function createEvent(payload: CreateEventPayload): Promise<Event> {
+  const response = await fetch(`${getApiBaseUrl()}/events`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to create event: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function updateEvent(
+  eventId: number,
+  payload: UpdateEventPayload
+): Promise<Event> {
+  const response = await fetch(`${getApiBaseUrl()}/events/${eventId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to update event: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function deleteEvent(eventId: number): Promise<void> {
+  const response = await fetch(`${getApiBaseUrl()}/events/${eventId}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to delete event: ${response.status}`);
+  }
+}
+
