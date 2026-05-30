@@ -234,7 +234,7 @@ const BandBrowser = forwardRef<BandBrowserHandle, BandBrowserProps>(
 
                 <span>
                   <strong>{band.name}</strong>
-                  <small>{band.genre || "Band"}</small>
+                  {band.genre && <small>{band.genre}</small>}
                   <small>{band.origin_city || "Location unknown"}</small>
                 </span>
               </button>
@@ -260,7 +260,9 @@ const BandBrowser = forwardRef<BandBrowserHandle, BandBrowserProps>(
 
                   <div className="band-profile-copy">
                     <h2>{selectedBand.name}</h2>
-                    <p className="band-role">{selectedBand.genre || "Band"}</p>
+                    {selectedBand.genre && (
+                      <p className="band-role">{selectedBand.genre}</p>
+                    )}
                     <p className="band-location">
                       {selectedBand.origin_city || "Location unknown"}
                     </p>
