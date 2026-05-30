@@ -7,19 +7,23 @@ import "./AddArtistModal.css";
 
 type AddAlbumModalProps = {
   album?: Album | null;
+  linkedBandName?: string;
   onClose: () => void;
   onAlbumSaved: () => void;
 };
 
 export default function AddAlbumModal({
   album,
+  linkedBandName,
   onClose,
   onAlbumSaved,
 }: AddAlbumModalProps) {
   const isEditing = Boolean(album);
 
   const [title, setTitle] = useState(album?.title ?? "");
-  const [bandName, setBandName] = useState(album?.band_name ?? "");
+  const [bandName, setBandName] = useState(
+    linkedBandName ?? album?.band_name ?? ""
+  );
   const [year, setYear] = useState(album?.year ?? "");
   const [releaseDate, setReleaseDate] = useState(album?.release_date ?? "");
   const [genre, setGenre] = useState(album?.genre ?? "");
@@ -57,6 +61,7 @@ export default function AddAlbumModal({
       const payload = {
         title: title.trim(),
         album_name: title.trim(),
+        album_title: title.trim(),
         band_name: bandName.trim(),
         year: year.trim(),
         release_date: releaseDate.trim(),

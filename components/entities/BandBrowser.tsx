@@ -6,7 +6,7 @@ import {
   useImperativeHandle,
   useState,
 } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import {
   Album,
@@ -16,6 +16,7 @@ import {
   getAlbums,
   getArtists,
   getBands,
+  updateAlbum,
 } from "@/lib/api";
 import {
   isBadRelationshipName,
@@ -25,6 +26,8 @@ import RelatedSection, { RelatedItem } from "./RelatedSection";
 import LinkArtistModal from "./LinkArtistModal";
 import LinkAlbumModal from "./LinkAlbumModal";
 import AddBandModal from "./AddBandModal";
+import AddAlbumModal from "./AddAlbumModal";
+import RelatedActionMenu from "./RelatedActionMenu";
 import "./BandBrowser.css";
 
 export type BandBrowserHandle = {
@@ -38,19 +41,19 @@ type BandBrowserProps = {
 const BandBrowser = forwardRef<BandBrowserHandle, BandBrowserProps>(
   function BandBrowser({ showFilters }, ref) {
     const searchParams = useSearchParams();
-const router = useRouter();
-const pathname = usePathname();
     const selectedBandId = Number(searchParams.get("selected"));
 
     const [bands, setBands] = useState<Band[]>([]);
     const [artists, setArtists] = useState<Artist[]>([]);
-const [albums, setAlbums] = useState<Album[]>([]);
+    const [albums, setAlbums] = useState<Album[]>([]);
     const [selectedBand, setSelectedBand] = useState<Band | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
     const [isLinkArtistModalOpen, setIsLinkArtistModalOpen] = useState(false);
-const [isLinkAlbumModalOpen, setIsLinkAlbumModalOpen] = useState(false);
+    const [isLinkAlbumModalOpen, setIsLinkAlbumModalOpen] = useState(false);
+    const [isAlbumActionMenuOpen, setIsAlbumActionMenuOpen] = useState(false);
+    const [isAddAlbumModalOpen, setIsAddAlbumModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     async function loadBands() {
@@ -58,15 +61,15 @@ const [isLinkAlbumModalOpen, setIsLinkAlbumModalOpen] = useState(false);
         setIsLoading(true);
         setErrorMessage("");
 
-const [bandData, artistData, albumData] = await Promise.all([
-  getBands(),
-  getArtists(),
-  getAlbums(),
-]);
+        const [bandData, artistData, albumData] = await Promise.all([
+          getBands(),
+          getArtists(),
+          getAlbums(),
+        ]);
 
-setBands(bandData);
-setArtists(artistData);
-setAlbums(albumData);
+        setBands(bandData);
+        setArtists(artistData);
+        setAlbums(albumData);
 
         setSelectedBand((currentBand) => {
           if (selectedBandId) {
@@ -104,13 +107,13 @@ setAlbums(albumData);
       reloadBands: loadBands,
     }));
 
-const filteredBands = bands.filter(
-  (band) =>
-    !isBadRelationshipName(band.name) &&
-    `${band.name ?? ""} ${band.origin_city ?? ""} ${band.genre ?? ""}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-);
+    const filteredBands = bands.filter(
+      (band) =>
+        !isBadRelationshipName(band.name) &&
+        `${band.name ?? ""} ${band.origin_city ?? ""} ${band.genre ?? ""}`
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
+    );
 
     function getRelatedArtists(): RelatedItem[] {
       if (!selectedBand) {
@@ -131,24 +134,45 @@ const filteredBands = bands.filter(
         }));
     }
 
-function getRelatedAlbums(): RelatedItem[] {
-  if (!selectedBand) {
-    return [];
-  }
+    function getRelatedAlbums(): RelatedItem[] {
+      if (!selectedBand) {
+        return [];
+      }
 
-  return albums
-    .filter(
-      (album) =>
-        album.band_name?.toLowerCase() === selectedBand.name.toLowerCase()
-    )
-    .map((album) => ({
-      id: album.id,
-      name: album.title,
-      subtitle: album.year || album.genre || null,
-      image_url: album.image_url ?? null,
-      href: `/albums?selected=${album.id}`,
-    }));
-}
+      return albums
+        .filter(
+          (album) =>
+            album.band_name?.toLowerCase() === selectedBand.name.toLowerCase()
+        )
+        .map((album) => ({
+          id: album.id,
+          name: album.title || album.album_name || album.album_title || "Untitled album",
+          subtitle: album.year || album.genre || null,
+          image_url: album.image_url ?? null,
+          href: `/albums?selected=${album.id}`,
+          onUnlink: () => handleUnlinkAlbum(album),
+        }));
+    }
+
+    async function handleUnlinkAlbum(album: Album) {
+      const confirmed = window.confirm(
+        `Unlink ${album.title || album.album_name || "this album"} from ${selectedBand?.name}?`
+      );
+
+      if (!confirmed) return;
+
+      await updateAlbum(album.id, {
+        title: album.title || album.album_name || album.album_title || "",
+        album_name: album.album_name || album.title || album.album_title || "",
+        album_title: album.album_title || album.album_name || album.title || "",
+        band_name: "",
+        year: album.year ?? "",
+        track_list: album.track_list ?? "",
+        image_url: album.image_url ?? "",
+      });
+
+      await loadBands();
+    }
 
     async function handleDeleteBand() {
       if (!selectedBand) {
@@ -198,10 +222,7 @@ function getRelatedAlbums(): RelatedItem[] {
                   selectedBand?.id === band.id ? "active" : ""
                 }`}
                 key={band.id}
-onClick={() => {
-  setSelectedBand(band);
-  router.replace(`${pathname}?selected=${band.id}`, { scroll: false });
-}}
+                onClick={() => setSelectedBand(band)}
               >
                 <Image
                   src={band.image_url || "/icons/Bands.png"}
@@ -279,15 +300,30 @@ onClick={() => {
                   actionLabel="+ ADD ARTIST"
                 />
 
-<RelatedSection
-  title="RELATED ALBUMS"
-  emptyText="No albums have been linked to this band yet."
-  items={getRelatedAlbums()}
-  fallbackIcon="/icons/Albums.png"
-  onLinkClick={() => setIsLinkAlbumModalOpen(true)}
-  actionLabel="+ ADD ALBUM"
-/>
+                <RelatedSection
+                  title="RELATED ALBUMS"
+                  emptyText="No albums have been linked to this band yet."
+                  items={getRelatedAlbums()}
+                  fallbackIcon="/icons/Albums.png"
+                  onActionClick={() => setIsAlbumActionMenuOpen(true)}
+                  actionLabel="+ ADD ALBUM"
+                />
               </div>
+
+              <RelatedActionMenu
+                isOpen={isAlbumActionMenuOpen}
+                onClose={() => setIsAlbumActionMenuOpen(false)}
+                onAddNew={() => {
+                  setIsAlbumActionMenuOpen(false);
+                  setIsAddAlbumModalOpen(true);
+                }}
+                onSearchExisting={() => {
+                  setIsAlbumActionMenuOpen(false);
+                  setIsLinkAlbumModalOpen(true);
+                }}
+                addLabel="+ ADD NEW ALBUM"
+                searchLabel="SEARCH EXISTING"
+              />
 
               {isLinkArtistModalOpen && selectedBand && (
                 <LinkArtistModal
@@ -297,13 +333,21 @@ onClick={() => {
                 />
               )}
 
-{isLinkAlbumModalOpen && selectedBand && (
-  <LinkAlbumModal
-    band={selectedBand}
-    onClose={() => setIsLinkAlbumModalOpen(false)}
-    onLinked={loadBands}
-  />
-)}
+              {isLinkAlbumModalOpen && selectedBand && (
+                <LinkAlbumModal
+                  band={selectedBand}
+                  onClose={() => setIsLinkAlbumModalOpen(false)}
+                  onLinked={loadBands}
+                />
+              )}
+
+              {isAddAlbumModalOpen && selectedBand && (
+                <AddAlbumModal
+                  linkedBandName={selectedBand.name}
+                  onClose={() => setIsAddAlbumModalOpen(false)}
+                  onAlbumSaved={loadBands}
+                />
+              )}
 
               {isEditModalOpen && selectedBand && (
                 <AddBandModal

@@ -112,3 +112,34 @@
 .related-card-list::-webkit-scrollbar-thumb:hover {
   background: #ff3b30;
 }
+
+.related-card-shell {
+  position: relative;
+}
+
+.related-card-shell .related-card {
+  width: 100%;
+  padding-right: 44px;
+}
+
+.related-unlink-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1px solid #444;
+  background: #111;
+  color: #ff3b30;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 20px;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.related-unlink-button:hover {
+  border-color: #ff3b30;
+  background: #250000;
+}

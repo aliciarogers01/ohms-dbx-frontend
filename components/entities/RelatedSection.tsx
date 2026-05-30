@@ -8,6 +8,7 @@ export type RelatedItem = {
   subtitle?: string | null;
   image_url?: string | null;
   href?: string;
+  onUnlink?: () => void;
 };
 
 type RelatedSectionProps = {
@@ -16,6 +17,7 @@ type RelatedSectionProps = {
   items: RelatedItem[];
   fallbackIcon: string;
   onLinkClick?: () => void;
+  onActionClick?: () => void;
   actionLabel?: string;
 };
 
@@ -25,8 +27,11 @@ export default function RelatedSection({
   items,
   fallbackIcon,
   onLinkClick,
+  onActionClick,
   actionLabel = "+ ADD",
 }: RelatedSectionProps) {
+  const handleActionClick = onActionClick ?? onLinkClick;
+
   return (
     <section className="related-section">
       <div className="related-section-header">
@@ -53,14 +58,29 @@ export default function RelatedSection({
               </>
             );
 
-            return item.href ? (
-              <Link className="related-card" href={item.href} key={item.id}>
-                {card}
-              </Link>
-            ) : (
-              <button type="button" className="related-card" key={item.id}>
-                {card}
-              </button>
+            return (
+              <div className="related-card-shell" key={item.id}>
+                {item.href ? (
+                  <Link className="related-card" href={item.href}>
+                    {card}
+                  </Link>
+                ) : (
+                  <button type="button" className="related-card">
+                    {card}
+                  </button>
+                )}
+
+                {item.onUnlink && (
+                  <button
+                    type="button"
+                    className="related-unlink-button"
+                    onClick={item.onUnlink}
+                    aria-label={`Unlink ${item.name}`}
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
             );
           })}
         </div>
@@ -68,7 +88,11 @@ export default function RelatedSection({
         <p className="related-empty">{emptyText}</p>
       )}
 
-      <button type="button" className="related-section-action" onClick={onLinkClick}>
+      <button
+        type="button"
+        className="related-section-action"
+        onClick={handleActionClick}
+      >
         {actionLabel}
       </button>
     </section>
